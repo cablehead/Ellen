@@ -1,5 +1,5 @@
 return {
-	spans = require("ellen.spans"),
+	line = require("ellen.line"),
 	term = require("ellen.term"),
 	raw = require("ellen.raw"),
 }

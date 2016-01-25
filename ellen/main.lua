@@ -15,7 +15,7 @@ local term = ellen.term()
 
 
 local x = 1
-local line = ellen.spans()
+local line = ellen.line()
 
 
 local modes = {
@@ -58,6 +58,7 @@ local modes = {
 				term:move_right()
 			end
 		end
+		if ch == "i" then return 1 end
 		if ch == "q" then return 0 end
 		return 2
 	end,

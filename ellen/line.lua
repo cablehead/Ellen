@@ -2,15 +2,15 @@ local _ = require("levee")._
 local d = require("levee").d
 
 
-local Spans_mt = {}
-Spans_mt.__index = Spans_mt
+local Line_mt = {}
+Line_mt.__index = Line_mt
 
 
-function Spans_mt:__len()
+function Line_mt:__len()
 	return self.len
 end
 
-function Spans_mt:put(s)
+function Line_mt:put(s)
 	self.len = self.len + #s
 
 	local span = self.spans[self.n]
@@ -36,7 +36,7 @@ end
 
 
 return function()
-	local self = setmetatable({}, Spans_mt)
+	local self = setmetatable({}, Line_mt)
 
 	self.len = 0
 	self.n = 1
