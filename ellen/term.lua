@@ -48,7 +48,7 @@ function Term_mt:clear()
 end
 
 
-local function Term(no)
+return function(no)
 	local self = setmetatable({}, Term_mt)
 	self.no = no or 1
 	return self
