@@ -179,7 +179,6 @@ local function main2()
 		if ch == "*" then io.write("\27[@*") end
 		if ch == "D" then term:EL() end
 		if ch == "q" then break end
-
 	end
 
 	-- reset
