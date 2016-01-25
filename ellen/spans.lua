@@ -6,7 +6,13 @@ local Spans_mt = {}
 Spans_mt.__index = Spans_mt
 
 
+function Spans_mt:__len()
+	return self.len
+end
+
 function Spans_mt:put(s)
+	self.len = self.len + #s
+
 	local span = self.spans[self.n]
 	if #span == self.x then
 		self.x = self.x + #s
@@ -32,6 +38,7 @@ end
 return function()
 	local self = setmetatable({}, Spans_mt)
 
+	self.len = 0
 	self.n = 1
 	self.x = 0
 
