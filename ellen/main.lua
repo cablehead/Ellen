@@ -14,51 +14,38 @@ local ESC = "\27"
 local term = ellen.term()
 
 
-local x = 1
+local x = 0
 local line = ellen.line()
 
 
 local modes = {
 	function(ch)
 		if ch == ESC then
-			if x > 1 then
-				x = x - 1
-				term:move_left()
-			end
 			return 2
 		end
-		line:put(ch)
-		io.write(ch)
+
+		line:put(x, ch)
+		term:EL()
+		io.write(line:tail(x))
+
 		x = x + 1
 		return 1
 	end,
 
 	function(ch)
 		if ch == "0" then
-			if x > 1 then
-				term:move_left(x-1)
-				x = 1
-			end
+			x = 1
 		end
 		if ch == "$" then
-			if x < #line then
-				term:move_right(#line - x)
-				x = #line
-			end
+			x = #line
 		end
 		if ch == "h" then
-			if x > 1 then
-				x = x - 1
-				term:move_left()
-			end
+			x = x - 1
 		end
 		if ch == "l" then
-			if x < #line then
-				x = x + 1
-				term:move_right()
-			end
+			x = x + 1
 		end
-		if ch == "i" then return 1 end
+		if ch == "i" then x = x - 1 return 1 end
 		if ch == "q" then return 0 end
 		return 2
 	end,
@@ -73,16 +60,26 @@ local function main()
 
 	local err, reset, stream = ellen.raw(h)
 
-	local mode = modes[1]
+	term:clear()
+
+	local mode = 1
 
 	while true do
+		term:move(1, 2)
+		term:EL()
+		io.write(("mode: %d x: %d"):format(mode, x))
+		term:move(mode == 1 and x + 1 or x, 1)
 		local err, ch = stream:recv()
-		mode = modes[mode(ch)]
-		if not mode then break end
+		mode = modes[mode](ch)
+		if mode == 0 then break end
+		if x < 0 then x = 0 end
+		if x > #line then x = #line end
 	end
 
 	reset()
-	io.write("\n")
+	term:move(1, 2)
+	term:EL()
+	print(line:tail(0))
 end
 
 
