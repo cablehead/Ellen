@@ -10,28 +10,27 @@ function Line_mt:__len()
 	return self.len
 end
 
+
 function Line_mt:put(s)
 	self.len = self.len + #s
 
 	local span = self.spans[self.n]
-	if #span == self.x then
-		self.x = self.x + #s
-		span:push(s)
-		return
+
+	if self.x < #span then
+		-- split span
+		local buf, len = span:value()
+		local n = len - self.x
+
+		local tgt = d.Buffer(n)
+		C.memcpy(tgt.buf, buf + self.x, n)
+		tgt:bump(n)
+		table.insert(self.spans, self.n + 1, tgt)
+
+		span.len = span.len - n
 	end
 
-	local buf, len = span:value()
-	local n = len - self.x
-
-	local tgt = d.Buffer(n)
-	C.memcpy(tgt.buf, buf + self.x, n)
-	tgt:bump(n)
-
-	span.len = span.len - n
 	self.x = self.x + #s
 	span:push(s)
-
-	table.insert(self.spans, self.n + 1, tgt)
 end
 
 
