@@ -53,7 +53,9 @@ local modes = {
 		if ch == "k" then y = y - 1 end
 		if ch == "h" then x = x - 1 end
 		if ch == "l" then x = x + 1 end
-		if ch == "i" then x = x - 1 return 1 end
+		if ch == "i" then x = x - 1; return 1 end
+		if ch == "a" then return 1 end
+		if ch == "A" then x = #line; return 1 end
 		if ch == "q" then return 0 end
 		return 2
 	end,
