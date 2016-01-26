@@ -1,16 +1,17 @@
 local levee = require("levee")
 local _ = require("levee")._
 
-io.stdout:setvbuf('no')  -- unbuffer stdout
-
 local ellen = require("ellen")
 
 local ESC = "\27"
+local ENT = "\13"
 
 local term = ellen.term()
 
 local x = 0
 local y = 1
+
+local last = 0
 
 
 local lines = {
@@ -21,9 +22,19 @@ local modes = {
 	function(ch)
 		local line = lines[y]
 
-		if ch == ESC then
-			return 2
+		if ch == ESC then return 2 end
+
+		if ch == ENT then
+			x = 0
+			y = y + 1
+			table.insert(lines, y, ellen.line())
+			-- TODO:
+			-- split current line into new line
+			-- redraw all subsequent lines, moved down one position
+			return 1
 		end
+
+		last = string.byte(ch)
 
 		line:put(x, ch)
 		term:EL()
@@ -59,7 +70,7 @@ end
 local function main(h, ws, stream)
 	local mode = 1
 	while true do
-		status(ws.row, "mode: %s x: %s y:%s", mode, x, y)
+		status(ws.row, "mode:%s x:%s y:%s last:%s", mode, x, y, last)
 		term:move(mode == 1 and x + 1 or x, y)
 		local err, ch = stream:recv()
 		mode = modes[mode](ch)
@@ -73,6 +84,10 @@ local function main(h, ws, stream)
 	end
 end
 
+
+
+---
+io.stdout:setvbuf('no')  -- unbuffer stdout
 
 local h = levee.Hub()
 
