@@ -1,20 +1,15 @@
 return {
 	test_core = function()
-		print()
-		print()
 		local line = require("ellen.line")()
-
-		line:put(0, "foo")
-		line:put(3, "bar")
-		line:put(4, "123")
-
-		for i, span in ipairs(line.spans) do
-			print("--", span:peek())
-		end
-
-		print(line:tail(4))
-		print(line:tail(8))
-
-		print()
+		line:splice(0, 0, "foo")
+		assert.equal(line:peek(), "foo")
+		line:splice(3, 0, "bar")
+		assert.equal(line:peek(), "foobar")
+		line:splice(3, 0, "123")
+		assert.equal(line:peek(), "foo123bar")
+		line:splice(6, 1)
+		assert.equal(line:peek(), "foo123ar")
+		line:splice(7, 1)
+		assert.equal(line:peek(), "foo123a")
 	end,
 }
