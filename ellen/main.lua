@@ -80,6 +80,58 @@ end
 
 
 local function main(h, ws, stream)
+	local lines = {}
+	local longest = 0
+
+	local fh = io.open("/Users/andy/tmp/banksy.txt")
+	while true do
+		local line = fh:read("*l")
+		if not line then break end
+		longest = math.max(longest, #line)
+		table.insert(lines, ellen.line(line))
+	end
+	fh:close()
+
+	ws.col = 34
+
+	local function draw(offset_x, offset_y)
+		for i = 1, ws.row - 1 do
+			term:move(1, i)
+			term:EL(2)
+			io.write(lines[i+offset_y]:peek():sub(1+offset_x, ws.col+offset_x))
+		end
+	end
+
+	local offset_x = 0
+	local offset_y = 0
+
+	local xdir = 1
+	local ydir = 1
+
+	local function dupdate(d, curr, max)
+		if d == 1 then
+			if curr == max then return -1 end
+			-- if math.random() < curr / max then return -1 end
+			return 1
+		end
+		if curr == 0 then return 1 end
+		-- if math.random() > curr / max then return 1 end
+		return -1
+	end
+
+
+	for __ = 0, 200 do
+		draw(offset_x, offset_y)
+		h:sleep(50)
+
+		xdir = dupdate(xdir, offset_x, longest-ws.col)
+		ydir = dupdate(ydir, offset_y, #lines - ws.row)
+
+		offset_x = offset_x + xdir
+		offset_y = offset_y + ydir
+	end
+
+	do return end
 	local mode = 1
 	while true do
 		status(ws.row, "mode:%s x:%s y:%s last:%s", mode, x, y, last)
