@@ -35,8 +35,9 @@ function Line_mt:splice(idx, x, s)
 end
 
 
-return function()
+return function(s)
 	local self = setmetatable({}, Line_mt)
 	self.buf = d.Buffer()
+	if s then self.buf:push(s) end
 	return self
 end
