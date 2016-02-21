@@ -5,6 +5,7 @@ local ellen = require("ellen")
 
 local ESC = "\27"
 local ENT = "\13"
+local BS = "\127"
 
 local term = ellen.term()
 
@@ -24,6 +25,15 @@ local modes = {
 
 		if ch == ESC then return 2 end
 
+		if ch == BS then
+			x = x - 1
+			line:splice(x, 1)
+			term:EL(2)
+			term:move(1, y)
+			io.write(line:peek())
+			return 1
+		end
+
 		if ch == ENT then
 			x = 0
 			y = y + 1
@@ -36,10 +46,10 @@ local modes = {
 
 		last = string.byte(ch)
 
-		line:put(x, ch)
-		term:EL()
-		io.write(line:tail(x))
-
+		line:splice(x, 0, ch)
+		term:EL(2)
+		term:move(1, y)
+		io.write(line:peek())
 		x = x + 1
 		return 1
 	end,
