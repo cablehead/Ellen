@@ -19,6 +19,8 @@ local lines = {
 	ellen.line(), }
 
 
+
+
 local modes = {
 	function(ch)
 		local line = lines[y]
@@ -28,9 +30,6 @@ local modes = {
 		if ch == BS then
 			x = x - 1
 			line:splice(x, 1)
-			term:EL(2)
-			term:move(1, y)
-			io.write(line:peek())
 			return 1
 		end
 
@@ -47,9 +46,6 @@ local modes = {
 		last = string.byte(ch)
 
 		line:splice(x, 0, ch)
-		term:EL(2)
-		term:move(1, y)
-		io.write(line:peek())
 		x = x + 1
 		return 1
 	end,
@@ -72,18 +68,17 @@ local modes = {
 }
 
 
-local function status(row, s, ...)
-	term:move(1, row)
-	term:EL()
-	io.write(s:format(...))
-end
-
-
 local function main(h, ws, stream)
+	local panes = {
+		main = ellen.pane(1, 1, ws.col, ws.row - 1),
+		status = ellen.pane(1, ws.row, ws.col, 1), }
 	local mode = 1
 	while true do
-		status(ws.row, "mode:%s x:%s y:%s last:%s", mode, x, y, last)
+		panes.main:render(term, lines)
+		panes.status:render(
+			term, {("mode:%s x:%s y:%s last:%s"):format(mode, x, y, last)})
 		term:move(mode == 1 and x + 1 or x, y)
+
 		local err, ch = stream:recv()
 		mode = modes[mode](ch)
 		if mode == 0 then break end

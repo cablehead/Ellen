@@ -46,9 +46,11 @@ function Term_mt:move_down(n)
 	self:send(n or 0, "B")
 end
 
+
 function Term_mt:move_right(n)
 	self:send(n or 0, "C")
 end
+
 
 function Term_mt:move_left(n)
 	self:send(n or 0, "D")

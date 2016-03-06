@@ -13,8 +13,8 @@ function Line_mt:__len()
 end
 
 
-function Line_mt:peek()
-	return self.buf:peek()
+function Line_mt:peek(len)
+	return self.buf:peek(len)
 end
 
 
