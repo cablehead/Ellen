@@ -2,6 +2,18 @@ local Term_mt = {}
 Term_mt.__index = Term_mt
 
 
+function Term_mt:buf_alt()
+	-- switch to alternate buffer
+	self:write("\27[?1049h")
+end
+
+
+function Term_mt:buf_norm()
+	-- switch to normal buffer
+	self:write("\27[?1049l")
+end
+
+
 function Term_mt:send(...)
 	self:write("\27["..table.concat({...}))
 end

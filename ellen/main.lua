@@ -107,15 +107,15 @@ local err, reset, stream = ellen.raw(h)
 assert(not err)
 
 local err, ws = _.term.winsize(1)
-term:clear()
+term:buf_alt()
 
 local status, rc = xpcall(
 	function() return main(h, ws, stream) end,
 	function(err) return debug.traceback() .. "\n\n" .. err end)
 
 reset()
-term:move(1, ws.row)
-io.write("\n")
+term:buf_norm()
+
 
 if status then os.exit(rc) end
 
