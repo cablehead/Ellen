@@ -74,11 +74,23 @@ function Editor_mt:cursor()
 end
 
 
-return function()
+return function(options)
 	local self = setmetatable({}, Editor_mt)
-	self.lines = {Line(), }
-	self.x = 0
-	self.y = 1
+
+	options = options or {}
+
+	if options.lines then
+		self.lines = {}
+		for __, s in ipairs(options.lines) do
+			table.insert(self.lines, Line(s))
+		end
+	else
+		self.lines = {Line(), }
+	end
+
+	self.x = options.x or 0
+	self.y = options.y or 1
+
 	self.mode = self.mode_insert
 	return self
 end
