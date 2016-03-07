@@ -22,7 +22,14 @@ function Line_mt:splice(idx, x, s)
 	local b = self.buf
 	assert(idx <= #b)
 
+	x = x or #self.buf - idx
+
 	local start = b.buf + b.off + idx
+
+	local del = ""
+	if x > 0 then
+		del = ffi.string(start, x)
+	end
 
 	local keep
 	if #b > idx + x then
@@ -32,6 +39,7 @@ function Line_mt:splice(idx, x, s)
 	b.len = idx
 	if s then b:push(s) end
 	if keep then b:push(keep) end
+	return del
 end
 
 

@@ -34,12 +34,10 @@ local modes = {
 		end
 
 		if ch == ENT then
+			local rest = line:splice(x)
 			x = 0
 			y = y + 1
-			table.insert(lines, y, ellen.line())
-			-- TODO:
-			-- split current line into new line
-			-- redraw all subsequent lines, moved down one position
+			table.insert(lines, y, ellen.line(rest))
 			return 1
 		end
 
