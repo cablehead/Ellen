@@ -22,7 +22,7 @@ function Line_mt:splice(idx, x, s)
 	local b = self.buf
 	assert(idx <= #b)
 
-	x = x or #self.buf - idx
+	x = x or #b - idx
 
 	local start = b.buf + b.off + idx
 
@@ -46,6 +46,6 @@ end
 return function(s)
 	local self = setmetatable({}, Line_mt)
 	self.buf = d.Buffer()
-	if s then self.buf:push(s) end
+	if s and #s > 0 then self.buf:push(s) end
 	return self
 end

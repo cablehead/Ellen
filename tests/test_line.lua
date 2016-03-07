@@ -1,6 +1,8 @@
 return {
 	test_core = function()
 		local line = require("ellen.line")()
+		assert.equal(line:splice(0), "")
+		assert.equal(line:peek(), "")
 		assert.equal(line:splice(0, 0, "foo"), "")
 		assert.equal(line:peek(), "foo")
 		assert.equal(line:splice(3, 0, "bar"), "")
@@ -12,6 +14,8 @@ return {
 		assert.equal(line:splice(7, 1), "r")
 		assert.equal(line:peek(), "foo123a")
 		assert.equal(line:splice(3), "123a")
+		assert.equal(line:peek(), "foo")
+		assert.equal(line:splice(3), "")
 		assert.equal(line:peek(), "foo")
 	end,
 }

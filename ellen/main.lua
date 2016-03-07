@@ -19,8 +19,6 @@ local lines = {
 	ellen.line(), }
 
 
-
-
 local modes = {
 	function(ch)
 		local line = lines[y]
@@ -28,6 +26,7 @@ local modes = {
 		if ch == ESC then return 2 end
 
 		if ch == BS then
+			if x < 1 then return 1 end
 			x = x - 1
 			line:splice(x, 1)
 			return 1
