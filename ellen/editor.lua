@@ -58,19 +58,24 @@ end
 
 
 function Editor_mt:press(ch)
-	local mode = self.mode(self, ch)
-	if mode then self.mode = mode end
+	local mode = self.__mode(self, ch)
+	if mode then self.__mode = mode end
 	if self.y < 1 then self.y = 1 end
 	if self.y > #self.lines then self.y = #self.lines end
 	local line = self.lines[self.y]
 	if self.x < 0 then self.x = 0 end
 	if self.x > #line then self.x = #line end
-	return self.mode
+	return self.__mode
+end
+
+
+function Editor_mt:mode()
+	return self.__mode == self.mode_insert and "-- INSERT --" or ""
 end
 
 
 function Editor_mt:cursor()
-	return self.mode == self.mode_insert and self.x + 1 or self.x, self.y
+	return self.__mode == self.mode_insert and self.x + 1 or self.x, self.y
 end
 
 
@@ -91,6 +96,6 @@ return function(options)
 	self.x = options.x or 0
 	self.y = options.y or 1
 
-	self.mode = self.mode_insert
+	self.__mode = self.mode_insert
 	return self
 end
