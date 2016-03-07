@@ -5,17 +5,15 @@ Pane_mt.__index = Pane_mt
 function Pane_mt:render(term, lines)
 	local h = 0
 	while h < self.h do
-		if h < #lines then
-			local line = lines[h + 1] or ""
-			local compare = self.lines[h + 1] or ""
-			if line.peek then line = line:peek(self.w) end
-			if line ~= compare then
-				term:move(self.x, self.y + h)
-				term:EL(2)
-				io.write(line)
-			end
-			self.lines[h + 1] = line
+		local line = lines[h + 1] or ""
+		local compare = self.lines[h + 1] or ""
+		if line.peek then line = line:peek(self.w) end
+		if line ~= compare then
+			term:move(self.x, self.y + h)
+			term:EL(2)
+			io.write(line)
 		end
+		self.lines[h + 1] = line
 		h = h + 1
 	end
 end
