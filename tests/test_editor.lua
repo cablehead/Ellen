@@ -50,6 +50,19 @@ return {
 		assert.equal(editor.lines[1]:peek(), "h2i")
 	end,
 
+	test_I = function()
+		local options = {
+			lines = {"123"},
+			x = 3,
+			y = 1, }
+
+		local editor = ellen.editor(options)
+		editor:press(k.ESC)
+		editor:press("I")
+		editor:press("4")
+		assert.equal(editor.lines[1]:peek(), "4123")
+	end,
+
 	test_o = function()
 		local options = {
 			lines = {"hi", "123"},
@@ -64,6 +77,23 @@ return {
 		assert.equal(#editor.lines, 3)
 		assert.equal(editor.lines[1]:peek(), "hi")
 		assert.equal(editor.lines[2]:peek(), "mo")
+		assert.equal(editor.lines[3]:peek(), "123")
+	end,
+
+	test_O = function()
+		local options = {
+			lines = {"hi", "123"},
+			x = 1,
+			y = 1, }
+
+		local editor = ellen.editor(options)
+		editor:press(k.ESC)
+		editor:press("O")
+		editor:press("m")
+		editor:press("o")
+		assert.equal(#editor.lines, 3)
+		assert.equal(editor.lines[1]:peek(), "mo")
+		assert.equal(editor.lines[2]:peek(), "hi")
 		assert.equal(editor.lines[3]:peek(), "123")
 	end,
 }

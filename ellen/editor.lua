@@ -51,11 +51,17 @@ function Editor_mt:mode_command(ch)
 	if ch == "h" then self.x = self.x - 1 end
 	if ch == "l" then self.x = self.x + 1 end
 	if ch == "i" then self.x = self.x - 1; return 1 end
+	if ch == "I" then self.x = 0; return 1 end
 	if ch == "a" then return 1 end
 	if ch == "A" then self.x = #line; return 1 end
 	if ch == "o" then
 		self.x = 0
 		self.y = self.y + 1
+		table.insert(self.lines, self.y, Line())
+		return 1
+	end
+	if ch == "O" then
+		self.x = 0
 		table.insert(self.lines, self.y, Line())
 		return 1
 	end
