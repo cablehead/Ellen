@@ -1,0 +1,3 @@
+[submodule "modules/scintillua"]
+	path = modules/scintillua
+	url = https://github.com/rgieseke/scintillua.git
