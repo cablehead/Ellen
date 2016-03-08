@@ -29,6 +29,12 @@ function Editor_mt:mode_insert(ch)
 		return
 	end
 
+	if ch == k.TAB then
+		line:splice(self.x, 0, "  ")
+		self.x = self.x + 2
+		return
+	end
+
 	if ch == k.ENT then
 		local rest = line:splice(self.x)
 		self.x = 0
