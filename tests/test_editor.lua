@@ -37,6 +37,19 @@ return {
 		assert.equal(editor.lines[1]:peek(), "hi123")
 	end,
 
+	test_a = function()
+		local options = {
+			lines = {"hi"},
+			x = 1,
+			y = 1, }
+
+		local editor = ellen.editor(options)
+		editor:press(k.ESC)
+		editor:press("a")
+		editor:press("2")
+		assert.equal(editor.lines[1]:peek(), "h2i")
+	end,
+
 	test_o = function()
 		local options = {
 			lines = {"hi", "123"},
