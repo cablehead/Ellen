@@ -37,7 +37,7 @@ function Line_mt:splice(idx, x, s)
 	end
 
 	b.len = idx
-	if s then b:push(s) end
+	if s and #s > 0 then b:push(s) end
 	if keep then b:push(keep) end
 	return del
 end

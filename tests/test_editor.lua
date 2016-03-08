@@ -37,6 +37,17 @@ return {
 		assert.equal(editor.lines[1]:peek(), "hi123")
 	end,
 
+	test_BS_blank_merge_lines = function()
+		local options = {
+			lines = {"", ""},
+			x = 0,
+			y = 2, }
+		local editor = ellen.editor(options)
+		editor:press(k.BS)
+		assert.equal(#editor.lines, 1)
+		assert.equal(editor.lines[1]:peek(), "")
+	end,
+
 	test_a = function()
 		local options = {
 			lines = {"hi"},

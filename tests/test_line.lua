@@ -3,6 +3,8 @@ return {
 		local line = require("ellen.line")()
 		assert.equal(line:splice(0), "")
 		assert.equal(line:peek(), "")
+		assert.equal(line:splice(0, 0, line:peek()), "")
+		assert.equal(line:peek(), "")
 		assert.equal(line:splice(0, 0, "foo"), "")
 		assert.equal(line:peek(), "foo")
 		assert.equal(line:splice(3, 0, "bar"), "")
