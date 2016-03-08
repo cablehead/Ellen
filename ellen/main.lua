@@ -16,8 +16,8 @@ local function main(h, ws, stream)
 
 	while true do
 		panes.main:render(term, editor.lines)
-		panes.status:render(term, {("mode:%s x:%s y:%s last:%s"):format(
-			editor:mode(), editor.x, editor.y, last)})
+		panes.status:render(term, {("x:%03d y:%03d last:%03d%s"):format(
+			editor.x, editor.y, last, editor.mode == 1 and "  -- INSERT --" or "")})
 		term:move(editor:cursor())
 		local err, ch = stream:recv()
 		last = string.byte(ch)

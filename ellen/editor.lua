@@ -9,7 +9,7 @@ Editor_mt.__index = Editor_mt
 function Editor_mt:mode_insert(ch)
 	local line = self.lines[self.y]
 
-	if ch == k.ESC then return self.mode_command end
+	if ch == k.ESC then return 2 end
 
 	if ch == k.BS then
 		if self.x < 1 then
@@ -50,39 +50,39 @@ function Editor_mt:mode_command(ch)
 	if ch == "k" then self.y = self.y - 1 end
 	if ch == "h" then self.x = self.x - 1 end
 	if ch == "l" then self.x = self.x + 1 end
-	if ch == "i" then self.x = self.x - 1; return self.mode_insert end
+	if ch == "i" then self.x = self.x - 1; return 1 end
 	if ch == "a" then return 1 end
-	if ch == "A" then self.x = #line; return self.mode_insert end
+	if ch == "A" then self.x = #line; return 1 end
 	if ch == "o" then
 		self.x = 0
 		self.y = self.y + 1
 		table.insert(self.lines, self.y, Line())
-		return self.mode_insert
+		return 1
 	end
 	if ch == "q" then return 0 end
 end
 
 
 function Editor_mt:press(ch)
-	local mode = self.__mode(self, ch)
-	if mode then self.__mode = mode end
+	local mode = self.modes[self.mode](self, ch)
+	if mode then self.mode = mode end
 	if self.y < 1 then self.y = 1 end
 	if self.y > #self.lines then self.y = #self.lines end
 	local line = self.lines[self.y]
 	if self.x < 0 then self.x = 0 end
 	if self.x > #line then self.x = #line end
-	return self.__mode
-end
-
-
-function Editor_mt:mode()
-	return self.__mode == self.mode_insert and "-- INSERT --" or ""
+	return self.mode
 end
 
 
 function Editor_mt:cursor()
-	return self.__mode == self.mode_insert and self.x + 1 or self.x, self.y
+	return self.mode == 1 and self.x + 1 or self.x, self.y
 end
+
+
+Editor_mt.modes = {
+	Editor_mt.mode_insert,
+	Editor_mt.mode_command, }
 
 
 return function(options)
@@ -102,6 +102,6 @@ return function(options)
 	self.x = options.x or 0
 	self.y = options.y or 1
 
-	self.__mode = self.mode_insert
+	self.mode = 1
 	return self
 end
