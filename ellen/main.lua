@@ -15,7 +15,7 @@ local function main(h, ws, stream)
 	local editor = ellen.editor()
 
 	while true do
-		panes.main:render(term, editor.lines)
+		panes.main:highlight(term, editor.lines)
 		panes.status:render(term, {("x:%03d y:%03d last:%03d%s"):format(
 			editor.x, editor.y, last, editor.mode == 1 and "  -- INSERT --" or "")})
 		term:move(editor:cursor())
