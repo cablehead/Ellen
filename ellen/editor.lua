@@ -49,7 +49,10 @@ end
 
 
 function Editor_mt:mode_command(ch)
+	if self.chord then return self:mode_chord(ch) end
+
 	local line = self.lines[self.y]
+
 	if ch == "0" then self.x = 1 end
 	if ch == "$" then self.x = #line end
 	if ch == "j" then self.y = self.y + 1 end
@@ -71,11 +74,25 @@ function Editor_mt:mode_command(ch)
 		table.insert(self.lines, self.y, Line())
 		return 1
 	end
+	if ch == "d" then
+		self.chord = "d"
+	end
 	if ch == "q" then return 0 end
 end
 
 
+function Editor_mt:mode_chord(ch)
+	if self.chord == "d" and ch == "d" then
+		table.remove(self.lines, self.y)
+	else
+		self.alert = ("bad chard: %s%s"):format(self.chard, ch)
+	end
+	self.chord = nil
+end
+
+
 function Editor_mt:press(ch)
+	self.alert = nil
 	local mode = self.modes[self.mode](self, ch)
 	if mode then self.mode = mode end
 	if self.y < 1 then self.y = 1 end
@@ -94,7 +111,8 @@ end
 
 Editor_mt.modes = {
 	Editor_mt.mode_insert,
-	Editor_mt.mode_command, }
+	Editor_mt.mode_command,
+	Editor_mt.mode_chord, }
 
 
 return function(options)
