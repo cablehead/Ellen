@@ -2,23 +2,24 @@ local ellen = require("ellen")
 local k = ellen.keys
 
 return {
+	test_dot = function()
+		local editor = ellen.editor()
+		editor:press("123")
+		assert.equal(editor.lines[1]:peek(), "123")
+	end,
+
 	test_core = function()
 		local editor = ellen.editor()
 
-		editor:press("h")
-		editor:press("i")
+		editor:press("hi")
 		assert.equal(editor.lines[1]:peek(), "hi")
 
-		editor:press(k.ENT)
-		editor:press("1")
-		editor:press("2")
-		editor:press("3")
+		editor:press(k.ENT, "123")
 		assert.equal(editor.lines[2]:peek(), "123")
 
 		editor:press(k.BS)
 		assert.equal(editor.lines[2]:peek(), "12")
-		editor:press(k.BS)
-		editor:press(k.BS)
+		editor:press(k.BS, k.BS)
 		assert.equal(editor.lines[2]:peek(), "")
 
 		editor:press(k.BS)

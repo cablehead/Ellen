@@ -91,15 +91,19 @@ function Editor_mt:mode_chord(ch)
 end
 
 
-function Editor_mt:press(ch)
-	self.alert = nil
-	local mode = self.modes[self.mode](self, ch)
-	if mode then self.mode = mode end
-	if self.y < 1 then self.y = 1 end
-	if self.y > #self.lines then self.y = #self.lines end
-	local line = self.lines[self.y]
-	if self.x < 0 then self.x = 0 end
-	if self.x > #line then self.x = #line end
+function Editor_mt:press(...)
+	for __, chain in ipairs({...}) do
+		for ch in chain:gmatch(".") do
+			self.alert = nil
+			local mode = self.modes[self.mode](self, ch)
+			if mode then self.mode = mode end
+			if self.y < 1 then self.y = 1 end
+			if self.y > #self.lines then self.y = #self.lines end
+			local line = self.lines[self.y]
+			if self.x < 0 then self.x = 0 end
+			if self.x > #line then self.x = #line end
+		end
+	end
 	return self.mode
 end
 
