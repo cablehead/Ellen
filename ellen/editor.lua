@@ -85,7 +85,7 @@ function Editor_mt:mode_chord(ch)
 	if self.chord == "d" and ch == "d" then
 		table.remove(self.lines, self.y)
 	else
-		self.alert = ("bad chard: %s%s"):format(self.chard, ch)
+		self.alert = ("bad chord: %s%s"):format(self.chord, ch)
 	end
 	self.chord = nil
 end
@@ -111,8 +111,7 @@ end
 
 Editor_mt.modes = {
 	Editor_mt.mode_insert,
-	Editor_mt.mode_command,
-	Editor_mt.mode_chord, }
+	Editor_mt.mode_command, }
 
 
 return function(options)
