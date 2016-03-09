@@ -70,36 +70,44 @@ function Pane_mt:highlight(term, lines)
 	local i = 0
 	local token, nxt = nil, 1
 
-	term:move(self.x, self.y)
 	local h = 0
-	local len = 0
+
+	local color = txtrst
+	local current = {color}
+
+	local function write()
+		if color ~= txtrst then table.insert(current, txtrst) end
+		current = table.concat(current)
+		local compare = self.lines[h + 1] or ""
+		if current ~= compare then
+			term:move(self.x, self.y + h)
+			io.write(current)
+			term:EL()
+		end
+		h = h + 1
+		self.lines[h] = current
+		current = {color}
+	end
+
 	for c in text:gmatch(".") do
 		i = i + 1
 		if i == nxt then
-			io.write(txtrst)
 			token, nxt = itokens()
-			if colors[token] then io.write(colors[token]) end
+			color = colors[token] or txtrst
+			table.insert(current, color)
 		end
 
 		if c == "\n" then
-			h = h + 1
-			if (self.lengths[h] or 0) > len then term:EL() end
-			self.lengths[h] = len
-			len = 0
-			term:move(self.x, self.y + h)
+			write()
 		else
-			len = len + 1
-			io.write(c)
+			table.insert(current, c)
 		end
 	end
 
-	h = h + 1
-	self.lengths[h] = len
-	term:EL()
-	io.write(txtrst)
+	write()
 
-	for i = h, #self.lengths do
-		if self.lengths[i] > 0 then
+	for i = h + 1, #self.lines do
+		if #self.lines[i] > 0 then
 			term:move(self.x, self.y + i)
 			term:EL()
 		end
@@ -131,6 +139,5 @@ return function(x, y, w, h)
 	self.w = w
 	self.h = h
 	self.lines = {}
-	self.lengths = {}
 	return self
 end
