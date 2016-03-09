@@ -106,10 +106,11 @@ function Pane_mt:highlight(term, lines)
 
 	write()
 
-	for i = h + 1, #self.lines do
-		if #self.lines[i] > 0 then
+	for i = h, #self.lines do
+		if #(self.lines[i] or "") > 0 then
 			term:move(self.x, self.y + i)
 			term:EL()
+			self.lines[i] = nil
 		end
 	end
 end
