@@ -8,21 +8,29 @@ local term = ellen.term()
 local last = 0
 
 local function main(h, ws, stream)
+
+	local p1, div, p2 = unpack(ellen.layout.split(ws.col))
+
+	for y = 1, ws.row-1 do
+		term:move(div[1], y)
+		io.write(ellen.layout.VR)
+	end
+
 	local panes = {
-		main = ellen.pane(1, 1, ws.col, ws.row - 1),
+		main = ellen.pane(p2[1], 1, p2[2], ws.row - 1),
 		status = ellen.pane(1, ws.row, ws.col, 1), }
 
 	local editor = ellen.editor()
 
 	while true do
-		panes.main:highlight(term, editor.lines)
+		panes.main:render(term, editor.lines)
 		panes.status:render(term, {("x:%03d y:%03d last:%03d%15s%s"):format(
 			editor.x,
 			editor.y,
 			last,
 			editor.mode == 1 and "  -- INSERT --" or "",
 			editor.alert or "")})
-		term:move(editor:cursor())
+		panes.main:move(term, editor:cursor())
 		local err, ch = stream:recv()
 		last = string.byte(ch)
 		local mode = editor:press(ch)

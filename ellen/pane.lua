@@ -124,12 +124,17 @@ function Pane_mt:render(term, lines)
 		if line.peek then line = line:peek(self.w) end
 		if line ~= compare then
 			term:move(self.x, self.y + h)
-			term:EL(2)
 			io.write(line)
+			io.write((" "):rep(self.w-#line-1))
 		end
 		self.lines[h + 1] = line
 		h = h + 1
 	end
+end
+
+
+function Pane_mt:move(term, x, y)
+	term:move(math.max(self.x + x - 1, self.x), math.max(self.y + y - 1, self.y))
 end
 
 

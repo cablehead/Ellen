@@ -1,4 +1,5 @@
 return {
+	layout = require("ellen.layout"),
 	editor = require("ellen.editor"),
 	line = require("ellen.line"),
 	pane = require("ellen.pane"),
