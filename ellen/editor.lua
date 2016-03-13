@@ -87,6 +87,7 @@ end
 function Editor_mt:mode_chord(ch)
 	if self.chord == "d" and ch == "d" then
 		table.remove(self.lines, self.y)
+		self.last = {"d", "d"}
 	else
 		self.alert = ("bad chord: %s%s"):format(self.chord, ch)
 	end
