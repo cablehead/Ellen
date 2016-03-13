@@ -18,4 +18,9 @@ return {
 			io.write("\n")
 		end
 	end,
+
+	test_hsplit = function()
+		assert.same(l.hsplit(5), {{0, 2}, {2, 1}, {3, 2}})
+		assert.same(l.hsplit(6), {{0, 3}, {3, 1}, {4, 2}})
+	end,
 }
