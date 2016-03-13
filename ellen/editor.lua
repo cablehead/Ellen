@@ -7,6 +7,8 @@ Editor_mt.__index = Editor_mt
 
 
 function Editor_mt:mode_insert(ch)
+	table.insert(self.last, ch)
+
 	local line = self.lines[self.y]
 
 	if ch == k.ESC then return 2 end
@@ -77,6 +79,7 @@ function Editor_mt:mode_command(ch)
 	if ch == "d" then
 		self.chord = "d"
 	end
+	if ch == "." then self:press(table.concat(self.last)) end
 	if ch == "q" then return 0 end
 end
 
@@ -95,8 +98,14 @@ function Editor_mt:press(...)
 	for __, chain in ipairs({...}) do
 		for ch in chain:gmatch(".") do
 			self.alert = nil
+
 			local mode = self.modes[self.mode](self, ch)
-			if mode then self.mode = mode end
+
+			if mode then
+				if mode == 1 then self.last = {ch} end
+				self.mode = mode
+			end
+
 			if self.y < 1 then self.y = 1 end
 			if self.y > #self.lines then self.y = #self.lines end
 			local line = self.lines[self.y]
@@ -135,6 +144,6 @@ return function(options)
 	self.x = options.x or 0
 	self.y = options.y or 1
 
-	self.mode = 1
+	self.mode = 2
 	return self
 end

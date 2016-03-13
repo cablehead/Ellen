@@ -4,14 +4,14 @@ local k = ellen.keys
 return {
 	test_dot = function()
 		local editor = ellen.editor()
-		editor:press("123")
-		assert.equal(editor.lines[1]:peek(), "123")
+		editor:press("i123", k.ESC, ".")
+		assert.equal(editor.lines[1]:peek(), "121233")
 	end,
 
 	test_core = function()
 		local editor = ellen.editor()
 
-		editor:press("hi")
+		editor:press("ihi")
 		assert.equal(editor.lines[1]:peek(), "hi")
 
 		editor:press(k.ENT, "123")
@@ -33,7 +33,7 @@ return {
 			x = 0,
 			y = 2, }
 		local editor = ellen.editor(options)
-		editor:press(k.BS)
+		editor:press("i", k.BS)
 		assert.equal(#editor.lines, 1)
 		assert.equal(editor.lines[1]:peek(), "hi123")
 	end,
@@ -44,7 +44,7 @@ return {
 			x = 0,
 			y = 2, }
 		local editor = ellen.editor(options)
-		editor:press(k.BS)
+		editor:press("i", k.BS)
 		assert.equal(#editor.lines, 1)
 		assert.equal(editor.lines[1]:peek(), "")
 	end,
@@ -56,7 +56,6 @@ return {
 			y = 1, }
 
 		local editor = ellen.editor(options)
-		editor:press(k.ESC)
 		editor:press("a")
 		editor:press("2")
 		assert.equal(editor.lines[1]:peek(), "h2i")
@@ -69,7 +68,6 @@ return {
 			y = 1, }
 
 		local editor = ellen.editor(options)
-		editor:press(k.ESC)
 		editor:press("I")
 		editor:press("4")
 		assert.equal(editor.lines[1]:peek(), "4123")
@@ -82,7 +80,6 @@ return {
 			y = 1, }
 
 		local editor = ellen.editor(options)
-		editor:press(k.ESC)
 		editor:press("o")
 		editor:press("m")
 		editor:press("o")
@@ -99,7 +96,6 @@ return {
 			y = 1, }
 
 		local editor = ellen.editor(options)
-		editor:press(k.ESC)
 		editor:press("O")
 		editor:press("m")
 		editor:press("o")
@@ -116,7 +112,6 @@ return {
 			y = 2, }
 
 		local editor = ellen.editor(options)
-		editor:press(k.ESC)
 		editor:press("d")
 		editor:press("a")
 		editor:press("1")
