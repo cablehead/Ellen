@@ -1,0 +1,6 @@
+local hr = "─"
+local vr = "│"
+local aw = "┼"
+local sd = "┬"
+local sr = "├"
+local sl = "┤"
