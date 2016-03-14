@@ -20,7 +20,7 @@ end
 
 
 function Term_mt:write(s)
-	io.write(s)
+	self.out:write(s)
 end
 
 
@@ -62,8 +62,9 @@ function Term_mt:clear()
 end
 
 
-return function(no)
+return function(h, no)
 	local self = setmetatable({}, Term_mt)
 	self.no = no or 1
+	self.out = h.io:w(self.no)
 	return self
 end

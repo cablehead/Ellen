@@ -3,24 +3,33 @@ local _ = require("levee")._
 
 local ellen = require("ellen")
 
-local term = ellen.term()
-
 local last = 0
 
-local function main(h, ws, stream)
+local function main(h, term, ws, stream)
+
+	local fh = io.open("ellen/editor.lua")
+
+	local lines = {}
+	while true do
+		local line = fh:read("*line")
+		if not line then break end
+		line = line:gsub("\t", "  ")
+		table.insert(lines, line)
+	end
+
+	local editor = ellen.editor({lines=lines})
 
 	local p1, div, p2 = unpack(ellen.layout.split(ws.col))
 
 	for y = 1, ws.row-1 do
 		term:move(div[1], y)
-		io.write(ellen.layout.VR)
+		term:write(ellen.layout.VR)
 	end
 
 	local panes = {
 		main = ellen.pane(p2[1], 1, p2[2], ws.row - 1),
 		status = ellen.pane(1, ws.row, ws.col, 1), }
 
-	local editor = ellen.editor()
 
 	while true do
 		panes.main:render(term, editor.lines)
@@ -39,9 +48,11 @@ local function main(h, ws, stream)
 end
 
 ---
-io.stdout:setvbuf('no')  -- unbuffer stdout
+-- io.stdout:setvbuf('no')  -- unbuffer stdout
 
 local h = levee.Hub()
+
+local term = ellen.term(h)
 
 local err, reset, stream = ellen.raw(h)
 assert(not err)
@@ -50,12 +61,11 @@ local err, ws = _.term.winsize(1)
 term:buf_alt()
 
 local status, rc = xpcall(
-	function() return main(h, ws, stream) end,
+	function() return main(h, term, ws, stream) end,
 	function(err) return debug.traceback() .. "\n\n" .. err end)
 
 reset()
 term:buf_norm()
-
 
 if status then os.exit(rc) end
 

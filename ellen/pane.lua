@@ -124,8 +124,8 @@ function Pane_mt:render(term, lines)
 		if line.peek then line = line:peek(self.w) end
 		if line ~= compare then
 			term:move(self.x, self.y + h)
-			io.write(line)
-			io.write((" "):rep(self.w-#line-1))
+			term:write(line)
+			term:write((" "):rep(self.w-#line-1))
 		end
 		self.lines[h + 1] = line
 		h = h + 1
