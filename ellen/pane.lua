@@ -119,7 +119,7 @@ end
 function Pane_mt:render(term, lines)
 	local h = 0
 	while h < self.h do
-		local line = lines[h + 1] or ""
+		local line = lines[h + 1 + self.y_offset] or ""
 		local compare = self.lines[h + 1] or ""
 		if line.peek then line = line:peek(self.w) end
 		if line ~= compare then
@@ -144,6 +144,8 @@ return function(x, y, w, h)
 	self.y = y
 	self.w = w
 	self.h = h
+
 	self.lines = {}
+	self.y_offset = 0
 	return self
 end

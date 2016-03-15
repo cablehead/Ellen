@@ -30,16 +30,24 @@ local function main(h, term, ws, stream)
 		main = ellen.pane(p2[1], 1, p2[2], ws.row - 1),
 		status = ellen.pane(1, ws.row, ws.col, 1), }
 
-
 	while true do
+		if editor.y - panes.main.y_offset > panes.main.h then
+			panes.main.y_offset = editor.y - panes.main.h
+		end
+
+		if editor.y <= panes.main.y_offset then
+			panes.main.y_offset = editor.y - 1
+		end
+
 		panes.main:render(term, editor.lines)
-		panes.status:render(term, {("x:%03d y:%03d last:%03d%15s%s"):format(
+		panes.status:render(term, {("x:%03d y:%03d y_off:%03d last:%03d%15s%s"):format(
 			editor.x,
 			editor.y,
+			panes.main.y_offset,
 			last,
 			editor.mode == 1 and "  -- INSERT --" or "",
 			editor.alert or "")})
-		panes.main:move(term, editor:cursor())
+		panes.main:move(term, editor:cursor(), editor.y - panes.main.y_offset)
 		local err, ch = stream:recv()
 		last = string.byte(ch)
 		local mode = editor:press(ch)
