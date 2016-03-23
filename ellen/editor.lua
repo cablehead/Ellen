@@ -11,16 +11,16 @@ function Editor_mt:mode_insert(ch)
 
 	local line = self.lines[self.y]
 
-	if ch == k.ESC then return 2 end
+	if ch == k.ESC then self.x = self.x - 1; return 2 end
 
 	if ch == k.BS then
-		if self.x < 1 then
+		if self.x <= 1 then
 			if self.y <= 1 then return end
 
 			-- merge with previous line
 			self.y = self.y - 1
 			local prev = self.lines[self.y]
-			self.x = #prev
+			self.x = #prev + 1
 			prev:splice(self.x, 0, line:peek())
 			table.remove(self.lines, self.y + 1)
 			return
@@ -39,7 +39,7 @@ function Editor_mt:mode_insert(ch)
 
 	if ch == k.ENT then
 		local rest = line:splice(self.x)
-		self.x = 0
+		self.x = 1
 		self.y = self.y + 1
 		table.insert(self.lines, self.y, Line(rest))
 		return
@@ -61,18 +61,18 @@ function Editor_mt:mode_command(ch)
 	if ch == "k" then self.y = self.y - 1 end
 	if ch == "h" then self.x = self.x - 1 end
 	if ch == "l" then self.x = self.x + 1 end
-	if ch == "i" then self.x = self.x - 1; return 1 end
-	if ch == "I" then self.x = 0; return 1 end
-	if ch == "a" then return 1 end
-	if ch == "A" then self.x = #line; return 1 end
+	if ch == "i" then return 1 end
+	if ch == "I" then self.x = 1; return 1 end
+	if ch == "a" then self.x = self.x + 1; return 1 end
+	if ch == "A" then self.x = #line + 1; return 1 end
 	if ch == "o" then
-		self.x = 0
+		self.x = 1
 		self.y = self.y + 1
 		table.insert(self.lines, self.y, Line())
 		return 1
 	end
 	if ch == "O" then
-		self.x = 0
+		self.x = 1
 		table.insert(self.lines, self.y, Line())
 		return 1
 	end
@@ -110,8 +110,10 @@ function Editor_mt:press(...)
 			if self.y < 1 then self.y = 1 end
 			if self.y > #self.lines then self.y = #self.lines end
 			local line = self.lines[self.y]
-			if self.x < 0 then self.x = 0 end
-			if self.x > #line then self.x = #line end
+
+			local max_x = self.mode == 1 and #line + 1 or #line
+			if self.x > max_x then self.x = max_x end
+			if self.x < 1 then self.x = 1 end
 		end
 	end
 	return self.mode
@@ -142,7 +144,7 @@ return function(options)
 		self.lines = {Line(), }
 	end
 
-	self.x = options.x or 0
+	self.x = options.x or 1
 	self.y = options.y or 1
 
 	self.mode = 2

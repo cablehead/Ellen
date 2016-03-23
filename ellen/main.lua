@@ -17,6 +17,8 @@ local function main(h, term, ws, stream)
 		table.insert(lines, line)
 	end
 
+	lines = {""}
+
 	local editor = ellen.editor({lines=lines})
 
 	local p1, div, p2 = unpack(ellen.layout.split(ws.col))
@@ -47,7 +49,7 @@ local function main(h, term, ws, stream)
 			last,
 			editor.mode == 1 and "  -- INSERT --" or "",
 			editor.alert or "")})
-		panes.main:move(term, editor:cursor(), editor.y - panes.main.y_offset)
+		panes.main:move(term, editor.x, editor.y - panes.main.y_offset)
 		local err, ch = stream:recv()
 		last = string.byte(ch)
 		local mode = editor:press(ch)

@@ -2,7 +2,6 @@ local levee = require("levee")
 local _ = require("levee")._
 
 local ellen = require("ellen")
-local term = ellen.term()
 
 local l = require("ellen.layout")
 

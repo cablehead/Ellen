@@ -20,6 +20,7 @@ end
 
 function Line_mt:splice(idx, x, s)
 	local b = self.buf
+	idx = idx - 1
 	assert(idx <= #b)
 
 	x = x or #b - idx

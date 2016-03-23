@@ -30,7 +30,7 @@ return {
 	test_BS_merge_lines = function()
 		local options = {
 			lines = {"hi", "123"},
-			x = 0,
+			x = 1,
 			y = 2, }
 		local editor = ellen.editor(options)
 		editor:press("i", k.BS)
@@ -41,7 +41,7 @@ return {
 	test_BS_blank_merge_lines = function()
 		local options = {
 			lines = {"", ""},
-			x = 0,
+			x = 1,
 			y = 2, }
 		local editor = ellen.editor(options)
 		editor:press("i", k.BS)
@@ -64,7 +64,7 @@ return {
 	test_I = function()
 		local options = {
 			lines = {"123"},
-			x = 3,
+			x = 4,
 			y = 1, }
 
 		local editor = ellen.editor(options)
@@ -76,7 +76,7 @@ return {
 	test_o = function()
 		local options = {
 			lines = {"hi", "123"},
-			x = 1,
+			x = 2,
 			y = 1, }
 
 		local editor = ellen.editor(options)
