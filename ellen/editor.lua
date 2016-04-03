@@ -136,13 +136,13 @@ function Editor_mt:mode_command(ch, input)
 			self.alert = "no last"
 			return
 		end
-		self:run(self.last)
+		self:__run(self.last)
 	end
 	if ch == "q" then return 0 end
 end
 
 
-function Editor_mt:run(input)
+function Editor_mt:__run(input)
 	if type(input) == "string" then input = I(input) end
 	for ch in input do
 		self.alert = nil
@@ -150,6 +150,7 @@ function Editor_mt:run(input)
 		local mode = self.modes[self.mode](self, ch, input)
 
 		if mode then
+			if mode == 0 then break end
 			if mode == 1 then self.__edit = {ch} end
 			self.mode = mode
 		end
@@ -161,7 +162,15 @@ function Editor_mt:run(input)
 		local max_x = self.mode == 1 and #line + 1 or #line
 		if self.x > max_x then self.x = max_x end
 		if self.x < 1 then self.x = 1 end
+
+		if self.changes then self.changes:send(self.mode) end
 	end
+end
+
+
+function Editor_mt:run(input)
+	self:__run(input)
+	if self.changes then self.changes:close() end
 end
 
 
@@ -192,8 +201,9 @@ return {
 
 		self.x = options.x or 1
 		self.y = options.y or 1
-
 		self.mode = 2
+
+		self.changes = options.changes
 		return self
 	end,
 
