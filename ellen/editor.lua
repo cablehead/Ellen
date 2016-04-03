@@ -2,16 +2,58 @@ local Line = require("ellen.line")
 local k = require("ellen.keys")
 
 
+local I_mt = {}
+I_mt.__index = I_mt
+
+
+function I_mt:__next_chain()
+	self.idx = self.idx or 0
+	self.idx = self.idx + 1
+	local chain = self.chains[self.idx]
+	if chain then
+		return chain:gmatch(".")
+	end
+end
+
+
+function I_mt:recv()
+	if not self.chain then return "fin" end
+	local ch = self.chain()
+	if ch then return nil, ch end
+	self.chain = self:__next_chain()
+	return self:recv()
+end
+
+
+function I_mt:__call()
+	local err, ch = self:recv()
+	if err then return end
+	return ch
+end
+
+
+local function I(...)
+	local self = setmetatable({}, I_mt)
+	self.chains = {...}
+	self.chain = self:__next_chain()
+	return self
+end
+
+
 local Editor_mt = {}
 Editor_mt.__index = Editor_mt
 
 
 function Editor_mt:mode_insert(ch)
-	table.insert(self.last, ch)
+	table.insert(self.__edit, ch)
 
 	local line = self.lines[self.y]
 
-	if ch == k.ESC then self.x = self.x - 1; return 2 end
+	if ch == k.ESC then
+		self.x = self.x - 1
+		self.last = table.concat(self.__edit)
+		return 2
+	end
 
 	if ch == k.BS then
 		if self.x <= 1 then
@@ -50,8 +92,8 @@ function Editor_mt:mode_insert(ch)
 end
 
 
-function Editor_mt:mode_command(ch)
-	if self.chord then return self:mode_chord(ch) end
+function Editor_mt:mode_command(ch, input)
+	-- if self.chord then return self:mode_chord(ch) end
 
 	local line = self.lines[self.y]
 
@@ -78,46 +120,48 @@ function Editor_mt:mode_command(ch)
 		return 1
 	end
 	if ch == "d" then
-		self.chord = "d"
+		local s = ch
+		local err, ch = input:recv()
+		if err then return 0 end
+		if ch == "d" then
+			self.last = "dd"
+			table.remove(self.lines, self.y)
+			return
+		end
+		self.alert = ("bad chord: %s%s"):format(s, ch)
+		return
 	end
-	if ch == "." then self:press(table.concat(self.last)) end
+	if ch == "." then
+		if not self.last then
+			self.alert = "no last"
+			return
+		end
+		self:run(self.last)
+	end
 	if ch == "q" then return 0 end
 end
 
 
-function Editor_mt:mode_chord(ch)
-	if self.chord == "d" and ch == "d" then
-		table.remove(self.lines, self.y)
-		self.last = {"d", "d"}
-	else
-		self.alert = ("bad chord: %s%s"):format(self.chord, ch)
-	end
-	self.chord = nil
-end
+function Editor_mt:run(input)
+	if type(input) == "string" then input = I(input) end
+	for ch in input do
+		self.alert = nil
 
+		local mode = self.modes[self.mode](self, ch, input)
 
-function Editor_mt:press(...)
-	for __, chain in ipairs({...}) do
-		for ch in chain:gmatch(".") do
-			self.alert = nil
-
-			local mode = self.modes[self.mode](self, ch)
-
-			if mode then
-				if mode == 1 then self.last = {ch} end
-				self.mode = mode
-			end
-
-			if self.y < 1 then self.y = 1 end
-			if self.y > #self.lines then self.y = #self.lines end
-			local line = self.lines[self.y]
-
-			local max_x = self.mode == 1 and #line + 1 or #line
-			if self.x > max_x then self.x = max_x end
-			if self.x < 1 then self.x = 1 end
+		if mode then
+			if mode == 1 then self.__edit = {ch} end
+			self.mode = mode
 		end
+
+		if self.y < 1 then self.y = 1 end
+		if self.y > #self.lines then self.y = #self.lines end
+		local line = self.lines[self.y]
+
+		local max_x = self.mode == 1 and #line + 1 or #line
+		if self.x > max_x then self.x = max_x end
+		if self.x < 1 then self.x = 1 end
 	end
-	return self.mode
 end
 
 
@@ -131,23 +175,26 @@ Editor_mt.modes = {
 	Editor_mt.mode_command, }
 
 
-return function(options)
-	local self = setmetatable({}, Editor_mt)
+return {
+	Editor = function(options)
+		local self = setmetatable({}, Editor_mt)
 
-	options = options or {}
+		options = options or {}
 
-	if options.lines then
-		self.lines = {}
-		for __, s in ipairs(options.lines) do
-			table.insert(self.lines, Line(s))
+		if options.lines then
+			self.lines = {}
+			for __, s in ipairs(options.lines) do
+				table.insert(self.lines, Line(s))
+			end
+		else
+			self.lines = {Line(), }
 		end
-	else
-		self.lines = {Line(), }
-	end
 
-	self.x = options.x or 1
-	self.y = options.y or 1
+		self.x = options.x or 1
+		self.y = options.y or 1
 
-	self.mode = 2
-	return self
-end
+		self.mode = 2
+		return self
+	end,
+
+	I = I, }

@@ -1,30 +1,48 @@
 local ellen = require("ellen")
 local k = ellen.keys
 
+local Editor = ellen.editor.Editor
+local I = ellen.editor.I
+
+
 return {
-	test_dot = function()
-		local editor = ellen.editor()
-		editor:press("i123", k.ESC, ".")
-		assert.equal(editor.lines[1]:peek(), "121233")
+	test_input = function()
+		local got = {}
+		for ch in I("i123", k.ESC, ".") do
+			table.insert(got, ch)
+		end
+		assert.same(got, {"i", "1", "2", "3", k.ESC, "."})
 	end,
 
 	test_core = function()
-		local editor = ellen.editor()
+		local editor = Editor()
 
-		editor:press("ihi")
+		editor:run(I("ihi"))
 		assert.equal(editor.lines[1]:peek(), "hi")
 
-		editor:press(k.ENT, "123")
+		editor:run(I(k.ENT, "123"))
 		assert.equal(editor.lines[2]:peek(), "123")
 
-		editor:press(k.BS)
+		editor:run(I(k.BS))
 		assert.equal(editor.lines[2]:peek(), "12")
-		editor:press(k.BS, k.BS)
+		editor:run(I(k.BS, k.BS))
 		assert.equal(editor.lines[2]:peek(), "")
 
-		editor:press(k.BS)
+		editor:run(I(k.BS))
 		assert.equal(#editor.lines, 1)
 		assert.equal(editor.lines[1]:peek(), "hi")
+	end,
+
+	test_bounds = function()
+		local editor = Editor()
+		editor:run("h")
+		assert.equal(editor.x, 1)
+		editor:run("l")
+		assert.equal(editor.x, 1)
+		editor:run("k")
+		assert.equal(editor.y, 1)
+		editor:run("j")
+		assert.equal(editor.y, 1)
 	end,
 
 	test_BS_merge_lines = function()
@@ -32,8 +50,8 @@ return {
 			lines = {"hi", "123"},
 			x = 1,
 			y = 2, }
-		local editor = ellen.editor(options)
-		editor:press("i", k.BS)
+		local editor = Editor(options)
+		editor:run(I("i", k.BS))
 		assert.equal(#editor.lines, 1)
 		assert.equal(editor.lines[1]:peek(), "hi123")
 	end,
@@ -43,8 +61,8 @@ return {
 			lines = {"", ""},
 			x = 1,
 			y = 2, }
-		local editor = ellen.editor(options)
-		editor:press("i", k.BS)
+		local editor = Editor(options)
+		editor:run(I("i", k.BS))
 		assert.equal(#editor.lines, 1)
 		assert.equal(editor.lines[1]:peek(), "")
 	end,
@@ -55,9 +73,8 @@ return {
 			x = 1,
 			y = 1, }
 
-		local editor = ellen.editor(options)
-		editor:press("a")
-		editor:press("2")
+		local editor = Editor(options)
+		editor:run(I("a2"))
 		assert.equal(editor.lines[1]:peek(), "h2i")
 	end,
 
@@ -67,9 +84,8 @@ return {
 			x = 4,
 			y = 1, }
 
-		local editor = ellen.editor(options)
-		editor:press("I")
-		editor:press("4")
+		local editor = Editor(options)
+		editor:run(I("I4"))
 		assert.equal(editor.lines[1]:peek(), "4123")
 	end,
 
@@ -79,10 +95,8 @@ return {
 			x = 2,
 			y = 1, }
 
-		local editor = ellen.editor(options)
-		editor:press("o")
-		editor:press("m")
-		editor:press("o")
+		local editor = Editor(options)
+		editor:run(I("omo"))
 		assert.equal(#editor.lines, 3)
 		assert.equal(editor.lines[1]:peek(), "hi")
 		assert.equal(editor.lines[2]:peek(), "mo")
@@ -95,10 +109,8 @@ return {
 			x = 1,
 			y = 1, }
 
-		local editor = ellen.editor(options)
-		editor:press("O")
-		editor:press("m")
-		editor:press("o")
+		local editor = Editor(options)
+		editor:run(I("Omo"))
 		assert.equal(#editor.lines, 3)
 		assert.equal(editor.lines[1]:peek(), "mo")
 		assert.equal(editor.lines[2]:peek(), "hi")
@@ -111,14 +123,33 @@ return {
 			x = 1,
 			y = 2, }
 
-		local editor = ellen.editor(options)
-		editor:press("d")
-		editor:press("a")
-		editor:press("1")
-		editor:press("d")
-		editor:press("d")
+		local editor = Editor(options)
+		editor:run(I("da1dd"))
 		assert.equal(#editor.lines, 2)
 		assert.equal(editor.lines[1]:peek(), "hi")
 		assert.equal(editor.lines[2]:peek(), "line3")
+	end,
+
+	test_dot_no_last = function()
+		local editor = Editor()
+		editor:run(I("."))
+	end,
+
+	test_dot_i = function()
+		local editor = Editor()
+		editor:run(I("i123", k.ESC, "."))
+		assert.equal(editor.lines[1]:peek(), "121233")
+	end,
+
+	test_dot_dd = function()
+		local options = {
+			lines = {"hi", "123", "line3"},
+			x = 1,
+			y = 2, }
+
+		local editor = Editor(options)
+		editor:run(I("da1dd."))
+		assert.equal(#editor.lines, 1)
+		assert.equal(editor.lines[1]:peek(), "hi")
 	end,
 }
