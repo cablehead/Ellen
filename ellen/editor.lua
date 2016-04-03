@@ -61,6 +61,7 @@ function Editor_mt:mode_command(ch)
 	if ch == "k" then self.y = self.y - 1 end
 	if ch == "h" then self.x = self.x - 1 end
 	if ch == "l" then self.x = self.x + 1 end
+	if ch == "G" then self.y = #self.lines end
 	if ch == "i" then return 1 end
 	if ch == "I" then self.x = 1; return 1 end
 	if ch == "a" then self.x = self.x + 1; return 1 end

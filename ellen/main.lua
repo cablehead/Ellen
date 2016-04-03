@@ -17,7 +17,7 @@ local function main(h, term, ws, stream)
 		table.insert(lines, line)
 	end
 
-	lines = {""}
+	-- lines = {""}
 
 	local editor = ellen.editor({lines=lines})
 
