@@ -16,7 +16,20 @@ function I_mt:__next_chain()
 end
 
 
+function I_mt:peek()
+	if self.nxt then return nil, self.nxt end
+	local err
+	err, self.nxt = self:recv()
+	return err, self.nxt
+end
+
+
 function I_mt:recv()
+	if self.nxt then
+		local ret = self.nxt
+		self.nxt = nil
+		return nil, ret
+	end
 	if not self.chain then return "fin" end
 	local ch = self.chain()
 	if ch then return nil, ch end
