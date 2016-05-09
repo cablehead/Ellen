@@ -18,6 +18,21 @@ function Line_mt:peek(len)
 end
 
 
+function Line_mt:slice(idx, x)
+	local b = self.buf
+	idx = idx or 1
+	idx = math.max(idx, 1)
+	if idx > #b then return "" end
+
+	x = x or #b
+	x = math.max(x, 0)
+	x = math.min(#b - idx + 1, x)
+
+	if x == 0 then return "" end
+
+	return ffi.string(b.buf + b.off + idx - 1, x)
+end
+
 function Line_mt:splice(idx, x, s)
 	local b = self.buf
 	idx = idx - 1
